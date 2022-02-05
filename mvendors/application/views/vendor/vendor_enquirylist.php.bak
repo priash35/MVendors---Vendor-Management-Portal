@@ -1,0 +1,343 @@
+<!-- Theme JS files -->
+<script src="<?php echo base_url();?>/assets/admin/global_assets/js/plugins/tables/datatables/datatables.min.js"></script>
+<script src="<?php echo base_url();?>/assets/admin/global_assets/js/plugins/forms/selects/select2.min.js"></script>
+<script src="<?php echo base_url();?>/assets/admin/global_assets/js/demo_pages/datatables_advanced.js"></script>
+
+<!-- Content area -->
+<div class="content">
+
+	<?php if ($this->session->flashdata('event_success')) { ?>
+		<div class="alert alert-success alert-styled-left alert-arrow-left alert-dismissible" id="deletesuccess">
+		<button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+        <div class="font-weight-semibold"><?= $this->session->flashdata('event_success') ?> </div></div>
+    <?php }elseif ($this->session->flashdata('event_error')) { ?>
+    	<div class="alert alert-warning alert-styled-left alert-arrow-left alert-dismissible" id="deletesuccess">
+		<button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+        <div class="font-weight-semibold"><?= $this->session->flashdata('event_error') ?> </div></div>
+   <?php } ?>
+
+	<!-- Highlighting rows and columns -->
+	<div class="card">
+		<div class="card-header header-elements-inline">
+			<h4 class="card-title">Enquiries</h4>
+			<!-- <a href="<?php //echo base_url('Advertise/add_slider');?>"><button type="button" class="btn btn-primary legitRipple">Add New Slider<div class="legitRipple-ripple"></div></button></a> -->	
+		</div>
+		<table class="table table-bordered table-hover datatable-highlight">
+			<thead>
+				<tr>
+					<th>Sr.<br>No.</th>
+					<th>User Name</th>
+					<th>Product</th>
+					<th>Service</th>
+					<th>Quantity (Unit)</th>
+                   <!--  <th>Unit</th> -->
+                    <th>Credit Time</th>
+                    <th>Order Req.Time</th> 
+                    <th>Expectd Date</th> 
+                    <th>Message</th>  
+                    <!-- <th>Status</th>  -->
+                    <!-- <th>Enq. Date</th> 
+					<th>Created Date</th> -->
+					<!-- <th>Created On</th> -->
+					<!-- <th class="text-center">Status</th> -->
+					<th >Actions</th>
+
+				</tr>
+			</thead>
+			<tbody>
+				<?php $i=1; 
+				//print_r($userenq);	
+				foreach($userenq as $row) {?>
+				<tr>
+					<td><?php echo $i++?></td>
+
+					<td><?php echo $row->ufname.' '.$row->ulname?></td>
+					<?php if($row->enq_pro_subcat_id !='') {?>
+                  <td><?php echo $row->sub_category_title;?></td>
+                  <?php } else{?>
+                  <td>N.A.</td>
+                  <?php }?>
+
+                  <?php if($row->enq_ser_subcat_id !=''){?>
+                  <td><?php echo $row->sub_category_title;?></td>
+                  <?php } else{?>
+                    <td>N.A.</td>
+                  <?php }?>
+
+					<?php if($row->enq_qty !='' && $row->enq_unit !=''){?>  
+                  <td><?php echo $row->enq_qty.' '.$row->enq_unit;?></td>
+                  <?php } else{?>
+                    <td>N.A.</td>
+                  <?php }?>
+
+                  <!--  <?php //if($row->enq_unit !=''){?>  
+                  <td><?php // echo $row->enq_unit;?></td>
+                  <?php //} else{?>
+                    <td>N.A.</td>
+                  <?php //}?> -->
+
+                   <?php if($row->enq_crdt_time !=''){?>  
+                  <td><?php echo $row->enq_crdt_time;?><br>Days</td>
+                  <?php } else{?>
+                    <td>N.A.</td>
+                  <?php }?>
+
+                  <?php if($row->enq_oder_req_time !=''){?>  
+                  <td><?php echo $row->enq_oder_req_time;?><br>Days</td>
+                  <?php } else{?>
+                    <td>N.A.</td>
+                  <?php }?>
+
+                  <?php if($row->enq_exptd_date !=''){?>  
+                  <td><?php echo $row->enq_exptd_date;?></td>
+                  <?php } else{?>
+                    <td>N.A.</td>
+                  <?php }?>
+
+                  <td><?php echo $row->enq_msg;?></td>
+
+					<!-- <td><?php //echo $row->enq_status ?></td> -->
+
+					<!-- <td><?php //echo $row->enq_created ?></td> -->
+		
+					<!-- <td>Admin</td> -->
+					<!-- <td><?php //if($row->enq_status=='VERIFIED'){?>
+					<a href="<?php //echo base_url().'Advertise/makeSliderInactive/'.$row->enq_id;?>"><span class="badge badge-success">VERIFIED</span></a>
+					  <?php //}elseif ($row->enq_status=='FAKE') { ?>
+					<a href="<?php //echo base_url().'Advertise/makeSliderActive/'.$row->enq_id;?>"><span class="badge badge-danger">FAKE</span></a>
+					 <?php // }elseif ($row->enq_status=='CLOSED') { ?>
+					<a href="<?php //echo base_url().'Advertise/makeSliderActive/'.$row->enq_id;?>"><span class="badge badge-warning">CLOSED</span></a>
+					  <?php //}else{ ?>
+					<a href="<?php //echo base_url().'Advertise/makeSliderActive/'.$row->enq_id;?>"><span class="badge badge-primary">NORMAL</span></a>
+					  <?php //}?>
+					</td> -->
+					<td>
+						<?php
+						if($row->res_enq_status=="Active"){
+						?>
+						<a href="#" onclick="accept_enq(<?php echo $row->enq_id;?>)"><i class="icon-checkmark2"></i></a> &nbsp
+
+						<a href="#" onclick="decline_enq(<?php echo $row->res_id;?>);"><i class="icon-cross3"></i></a><?php }else{?>
+
+						<a class="enq_details" data-toggle="modal" data-id="<?php echo $row->enq_id;?>" data-vid="<?php echo $row->res_vend_id;?>" data-userid="<?php echo $row->user_id;?>" data-target="#EnqDetails"  href="#">View Details </a>	
+					<?php } ?>
+
+					</td>
+				</tr>
+				<?php  }?>
+			</tbody>
+		</table>
+	</div>
+	<!-- /highlighting rows and columns -->
+
+	<!--enquiry Popup Start-->  <!-- updated on 11 Dec 2018 -->
+ <div id="EnqDetails" class="modal fade">
+    <div class="modal-dialog login-popup">
+        <div class="modal-content" style="height: auto;">
+        
+            <div class="modal-body" > 
+                
+                 <form id="quot-form" name="quot-form" enctype="multipart/form-data" method="POST" action="<?php echo base_url("Inquiry/upload_quot");?>">
+                 	<input type="hidden" name="enqId" id="enqId">
+                 	<input type="hidden" name="userId" id="userId">
+
+                   <h4>Enquiry Details<span class="text-capitalize" style="color: orangered;"></span></h4><span id="error1" class="price"> </span><br> 
+             	<div class="table-rep-plugin">
+                    <div class="table-responsive" data-pattern="priority-columns">
+                        <table id="datatable" class="table  table-striped tbldata">
+                                        
+                        </table>
+                        <hr>
+                         <div class="row">
+                         	<div class="col-md-12"><label for="Message">Upload Quotation<span class="required"></span></label></div>
+		               		 <div class= "col-md-6">
+		                   		<input type="file" id="quot" name= "quot" required>
+							</div>
+							
+		                  	<div class="col-md-6">
+		                 		<button id="quot_upload" name="quot_upload" class="button btnSubmit">&nbsp; <span>Send</span></button>
+		                	</div>
+
+               	 		</div>
+                    </div>
+
+                </div>
+               
+                <hr>
+        	 	</form>
+
+
+         	</div>
+      
+        </div>
+            
+    </div>
+    
+</div>
+ <!--End of enquiry Popup--> 
+</div>
+<!-- /content area -->
+
+<script type="text/javascript">
+	function doconfirm()
+	{
+	  job=confirm("Are you sure to delete permanently?");
+	  if(job!=true)
+	  {
+	    return false;
+	  }
+	} 
+</script>
+
+<script type="text/javascript">
+	$(document).ready (function(){
+		$("#deletesuccess").alert();
+		window.setTimeout(function () { 
+		$("#deletesuccess").alert('close'); }, 2000);
+	})
+</script>
+
+<script type="text/javascript">					//Updated on 11 Dec 2018
+        function accept_enq(enq_id)
+				{	
+					//alert(enq_id);
+					if(enq_id!="")
+					{
+						var conf= confirm("Once you accept this Enquiry, required points will be automatically deducted.Are you sure you want to accept this enquiry?");
+						
+						if(conf)
+						{
+							window.location.href= "<?php echo site_url('Inquiry/accept_enquiry');?>?id="+enq_id;
+						}
+					}
+				}
+
+		 function decline_enq(res_id)					//Updated on 13 Dec 2018
+				{	
+					//alert(enq_id);
+					if(res_id!="")
+					{
+						var conf= confirm("Once you decline this Enquiry, this enquiry will be automatically closed for you.");
+						
+						if(conf)
+						{
+							window.location.href= "<?php echo site_url('Inquiry/decline_enquiry');?>?id="+res_id;
+						}
+					}
+				}
+</script>
+
+<script type="text/javascript">
+
+	$(".enq_details").click(function(e){							//11 Dec 2018
+			var enq_Id = $(this).data('id');
+			var vid = $(this).data('vid');
+			var user_Id = $(this).data('userid');
+
+
+			$.ajax({
+	                        url:'<?php echo base_url("Inquiry/get_details");?>',
+							data: {enq_Id:enq_Id,vid:vid,user_Id:user_Id},  
+	                      	type:"POST",
+	                        success:function(data)
+	                        {  
+							 $('.tbldata').html('');
+							 //alert(data);
+								var mydata= JSON.parse(data);
+								//alert(mydata);
+								/*id = mydata[0]['enq_name'];
+								alert(id);*/
+
+								$("#enqId").val(mydata[0]['enq_id']);
+								$("#userId").val(mydata[0]['enq_user_id']);
+
+							    var tr=[];
+							        tr.push('<tr>');
+							        tr.push("<th> Name</td>");
+							        tr.push("<td>" + mydata[0]['ufname']+" "+mydata[0]['ulname'] + "</td>");
+							        tr.push('</tr>');
+							        tr.push('<tr>');
+							        tr.push("<th> Mobile No.</td>");
+							        tr.push("<td>" + mydata[0]['umobile'] + "</td>");
+							        tr.push('</tr>');
+							        tr.push('<tr>');
+							        tr.push("<th> Email</td>");
+							        tr.push("<td>" + mydata[0]['uemail'] + "</td>");
+							        tr.push('</tr>');
+							        tr.push('<tr>');
+							        tr.push("<th> Address</td>");
+							        tr.push("<td>" + mydata[0]['uaddress'] + "</td>");
+							        tr.push('</tr>');
+							        
+							        if(mydata[0]['enq_pro_subcat_id']!=null){
+							        tr.push('<tr>');
+							        tr.push("<th> Product/Service</td>");
+							        tr.push("<td>" + mydata[0]['sub_category_title'] + "</td>");
+							        tr.push('</tr>');
+							    	}
+
+							    	if(mydata[0]['enq_ser_subcat_id']!=null){
+							        tr.push('<tr>');
+							        tr.push("<th> Product/Service</td>");
+							        tr.push("<td>" + mydata[0]['sub_category_title'] + "</td>");
+							        tr.push('</tr>');
+							   		}
+
+							   		if(mydata[0]['enq_qty']!=null && mydata[0]['enq_unit']!=null){
+							        tr.push('<tr>');
+							        tr.push("<th> Quantity</td>");
+							        tr.push("<td>" + mydata[0]['enq_qty'] +" "+mydata[0]['enq_unit']+ "</td>");
+							        tr.push('</tr>');
+							    	}
+
+							        tr.push('<tr>');
+							        tr.push("<th> Message</td>");
+							        tr.push("<td>" + mydata[0]['enq_msg'] + "</td>");
+							        tr.push('</tr>');
+							        tr.push('<tr>');
+
+							        if(mydata[0]['enq_crdt_time']!=null){
+							        tr.push("<th> Enquiry Credit Time</td>");
+							        tr.push("<td>" + mydata[0]['enq_crdt_time'] + " Days</td>");
+							        tr.push('</tr>');
+							    	}
+
+							    	if(mydata[0]['enq_oder_req_time']!=null){
+							        tr.push('<tr>');
+							        tr.push("<th> Order Required Time</td>");
+							        tr.push("<td>" + mydata[0]['enq_oder_req_time'] + " Days</td>");
+							        tr.push('</tr>');
+							    	}
+
+							    	if(mydata[0]['enq_exptd_date']!=null){
+							        tr.push('<tr>');
+							        tr.push("<th> Expected Date</td>");
+							        tr.push("<td>" + mydata[0]['enq_exptd_date'] + "</td>");
+							        tr.push('</tr>');
+							    	}
+
+							        tr.push('<tr>');
+							        tr.push("<th> Enquiry Date</td>");
+							        tr.push("<td>" + mydata[0]['enq_created'] + "</td>");
+							        tr.push('</tr>');
+							        tr.push('<tr>');
+							        
+
+							    
+							    $('.tbldata').append($(tr.join('')));
+							   // var enq_Id =null;
+						}
+						
+					});
+
+
+			});
+		
+
+	/*$(document).ready (function(){
+		//$("#EnqDetails").click(function(event){
+		$('#EnqDetails').on("click",function(){
+			jQuery('#EnqDetails').modal('show');
+		});
+	});*/
+</script> 

@@ -1,0 +1,376 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Inquiry_model  extends CI_Model {
+
+    public function get_videos()
+    {
+        $this->db->select('*');
+        $this->db->from('tbl_video');
+        return $this->db->get()->result();
+    }
+   
+    public function get_Inquiry($data)        //7 dec 2018
+    {
+    	 $details = $this->db->insert('tbl_enq_master', $data);
+        $enqID= $this->db->insert_id(); 
+         //if($details)
+          if($enqID)
+            {
+                return $enqID;
+            } 
+            return false;    
+    }
+   
+    public function get_InquiryDetails()        //8 dec 2018
+    {
+      $this->db->select('*');
+      $this->db->from('tbl_inquiry');
+      $this->db->order_by("inquiry_id","desc"); 
+      return $this->db->get()->result();
+    }
+     public function get_user_enqlist($vendor)      //updated 10 Dec 2018
+    {
+      $this->db->select('*');
+      $this->db->from('tbl_enq_master t1');
+      $this->db->join('tbl_enq_vendor_response t2', 't2.res_enq_id = t1.enq_id');
+      $this->db->join('tbl_sub_category t3','t3.sub_category_id = t1. enq_pro_subcat_id OR t3.sub_category_id = t1.enq_ser_subcat_id','left');
+      $this->db->join('tbl_user t4','t4.user_id= t1.enq_user_id');
+      $this->db->join('tbl_enq_atchmnt t5','t5.atch_enq_id= t1.enq_id AND t5.atch_user_id=t1.enq_user_id');
+      $this->db->where('t2.res_vend_id',$vendor);
+      $this->db->group_start();
+      $this->db->where('t2.res_enq_status','Active');
+
+      //$this->db->or_where('t2.res_enq_status','Accepted');
+      $this->db->group_end();
+      $this->db->order_by('t1.enq_id','DESC');
+
+      return $this->db->get()->result();
+    }
+
+    public function get_user_accepted_enqlist($vendor)      //updated 18 Dec 2018
+    {
+      $this->db->select('*');
+      $this->db->from('tbl_enq_master t1');
+      $this->db->join('tbl_enq_vendor_response t2', 't2.res_enq_id = t1.enq_id');
+      $this->db->join('tbl_sub_category t3','t3.sub_category_id = t1. enq_pro_subcat_id OR t3.sub_category_id = t1.enq_ser_subcat_id','left');
+      $this->db->join('tbl_user t4','t4.user_id= t1.enq_user_id');
+      $this->db->join('tbl_enq_atchmnt t5','t5.atch_enq_id= t1.enq_id AND t5.atch_user_id=t1.enq_user_id');
+      $this->db->where('t2.res_vend_id',$vendor);
+      $this->db->group_start();
+      //$this->db->where('t2.res_enq_status','Deal');
+      $this->db->or_where('t2.res_enq_status','Accepted');
+      $this->db->group_end();
+      $this->db->order_by('t1.enq_id','DESC');
+      return $this->db->get()->result();
+    }
+
+    public function get_user_deal_enqlist($vendor)      //20 Dec 2018
+    {
+      $this->db->select('*');
+      $this->db->from('tbl_enq_master t1');
+      $this->db->join('tbl_enq_vendor_response t2', 't2.res_enq_id = t1.enq_id');
+      $this->db->join('tbl_sub_category t3','t3.sub_category_id = t1. enq_pro_subcat_id OR t3.sub_category_id = t1.enq_ser_subcat_id','left');
+      $this->db->join('tbl_user t4','t4.user_id= t1.enq_user_id');
+      $this->db->join('tbl_enq_atchmnt t5','t5.atch_enq_id= t1.enq_id AND t5.atch_user_id=t1.enq_user_id');
+
+      $this->db->where('t2.res_vend_id',$vendor);
+      $this->db->group_start();
+      //$this->db->where('t2.res_enq_status','Active');
+      $this->db->or_where('t2.res_enq_status','Deal');
+      $this->db->group_end();
+      $this->db->order_by('t1.enq_id','DESC');
+      return $this->db->get()->result();
+    }
+
+    function select()
+     {
+      $this->db->order_by('vendor_id', 'DESC');
+      $query = $this->db->get('tbl_vendor');
+      return $query;
+     }
+
+     function insert($data)
+     {
+      $this->db->insert_batch('tbl_vendor', $data);
+     }
+
+     public function get_all_vendors($id)     //8 dec 2018
+     {
+       $this->db->select('vend_id');
+       $this->db->from('tbl_vendors_cat_subcat');
+       $this->db->where('subcat_id',$id);
+       $query = $this->db->get()->result();
+       return $query;
+     }
+
+     public function sendTo_vendors($data)     //8 dec 2018
+     {
+       $dt=$this->db->insert('tbl_enq_vendor_response',$data);
+       if($dt)
+            {
+                return $dt;
+            } 
+            return false; 
+     }
+
+     public function get_enq($enq_id,$vendor)       //11 Dec 2018
+     {
+        $this->db->select('*');
+        $this->db->from('tbl_enq_master t1');
+        $this->db->join('tbl_sub_category t2','t2.sub_category_id = t1. enq_pro_subcat_id OR t2.sub_category_id = t1.enq_ser_subcat_id','left');
+        $this->db->join('tbl_vbusiness_details t3','t3.bis_vendor_id ='.$vendor);
+        $this->db->join('tbl_enq_vendor_response t4','t4.res_vend_id = t3.bis_vendor_id AND t4.res_enq_id= t1.enq_id');
+
+        $this->db->where('t1.enq_id',$enq_id);
+       // $this->db->where('t1.enq_status','Active');
+        return $this->db->get()->result();
+     }
+
+     public function update_vendor_points($vendor,$new_pts)   //11 Dec 2018
+     {
+        $this->db->set('bis_vendor_pts',$new_pts);
+        $this->db->where('bis_vendor_id',$vendor);
+        return $res=$this->db->update('tbl_vbusiness_details');
+     }
+
+     public function update_enq_status($resId,$today)    //11 Dec 2018
+     {
+        $this->db->set('res_enq_status','Accepted');
+        $this->db->set('res_enq_updated',$today);
+        $this->db->where('res_id',$resId);
+        return $res=$this->db->update('tbl_enq_vendor_response');
+     }
+
+     public function insert_trans($data)     //11 Dec 2018
+     {
+       $this->db->insert('tbl_vendor_commission_deduction',$data);
+     }
+
+     public function getEnqDetails($enq_id,$v_id,$user_id)    //11 Dec 2018
+     {
+        $this->db->select('*');
+        $this->db->from('tbl_enq_master t1');
+        $this->db->join('tbl_sub_category t2','t2.sub_category_id = t1. enq_pro_subcat_id OR t2.sub_category_id = t1.enq_ser_subcat_id','left');
+        $this->db->join('tbl_vbusiness_details t3','t3.bis_vendor_id ='.$v_id);
+        $this->db->join('tbl_enq_vendor_response t4','t4.res_vend_id = t3.bis_vendor_id AND t4.res_enq_id= t1.enq_id');
+        $this->db->join('tbl_user t5','t5.user_id='.$user_id);
+       $this->db->join('tbl_enq_atchmnt t6','t6.atch_enq_id= t1.enq_id AND t6.atch_user_id=t1.enq_user_id');
+
+
+        $this->db->where('t1.enq_id',$enq_id);
+        // $this->db->where('t1.enq_status','Active');
+        return $this->db->get()->result();
+     }
+
+     public function getQuotDetails($enq_id,$v_id)    //18 Dec 2018
+     {
+        $this->db->select('*');
+        $this->db->from('tbl_vendor_quot t1');
+        $this->db->join('tbl_enq_master t2','t2.enq_id=t1.quot_enq_id');
+        $this->db->join('tbl_sub_category t3','t3.sub_category_id = t2.enq_pro_subcat_id OR t3.sub_category_id = t2.enq_ser_subcat_id','left');
+       
+        $this->db->where('t1.quot_enq_id',$enq_id);
+        $this->db->where('t1.quot_vend_id',$v_id);
+        $this->db->order_by('t1.quot_count','DESC');
+        return $this->db->get()->result();
+     }
+
+    public function insert_quot($data)                     //12 Dec 2018
+     {
+       $this->db->insert('tbl_vendor_quot',$data);
+     }
+ 
+    public function get_quotCount($enq_id,$vendor)         //12 Dec 2018
+    {     
+      $this->db->select('*');
+      $this->db->from('tbl_vendor_quot');
+      $this->db->where('quot_enq_id',$enq_id);
+      $this->db->where('quot_vend_id',$vendor);
+      $query=$this->db->get();
+      return $res= $query->num_rows();
+    }
+
+   function close_inq($res_id)            //13 dec 2018
+  {
+    $this->db->set('res_enq_status','Closed');
+    $this->db->where('res_id',$res_id);
+    return $res = $this->db->update('tbl_enq_vendor_response');
+  }
+  public function get_AllUserInquiry()
+  {
+      $this->db->select('*');
+      $this->db->from('tbl_enq_master tem');
+      $this->db->join('tbl_user tu','tu.user_id = tem.enq_user_id','left');
+      $this->db->join('tbl_sub_category tsc','tsc.sub_category_id = tem.enq_pro_subcat_id','left');
+      //$this->db->order_by("tempnam(dir, prefix) enq_id,desc");
+      $data = array('tem.enq_status' => 'Active', 'tem.enq_type' => 'Multiple');
+      $this->db->where( $data);
+      $this->db->order_by("enq_id","desc");
+
+      return $query=$this->db->get()->result();
+  }
+   public function get_single_user_enquirylist()
+  {
+      $this->db->select('*');
+      $this->db->from('tbl_enq_master tem');
+      $this->db->join('tbl_user tu','tu.user_id = tem.enq_user_id','left');
+      $this->db->join('tbl_sub_category tsc','tsc.sub_category_id = tem.enq_pro_subcat_id','left');
+      //$this->db->order_by("tempnam(dir, prefix) enq_id,desc");
+      $data = array('tem.enq_status' => 'Active', 'tem.enq_type' => 'Single');
+      $this->db->where( $data);
+     // $this->db->where('tem.enq_status','Active', 'tem.enq_type','Single');
+      $this->db->order_by("enq_id","desc");
+
+      return $query=$this->db->get()->result();
+  }
+
+   public function get_Allverified_inquiry()
+  {
+      $this->db->select('*');
+      $this->db->from('tbl_enq_master tem');
+      $this->db->join('tbl_user tu','tu.user_id = tem.enq_user_id','left');
+      $this->db->join('tbl_sub_category tsc','tsc.sub_category_id = tem.enq_pro_subcat_id','left');
+      $this->db->where('tem.enq_status','Verified');
+      return $query=$this->db->get()->result();
+  }
+  public function get_Allnon_verified_inquiry()
+  {
+      $this->db->select('*');
+      $this->db->from('tbl_enq_master tem');
+      $this->db->join('tbl_user tu','tu.user_id = tem.enq_user_id','left');
+      $this->db->join('tbl_sub_category tsc','tsc.sub_category_id = tem.enq_pro_subcat_id','left');
+      $this->db->where('tem.enq_status','Fake');
+      return $query=$this->db->get()->result();
+  }
+   public function get_Allcompleted_inquiry()
+  {
+      $this->db->select('*');
+      $this->db->from('tbl_enq_master tem');
+      $this->db->join('tbl_user tu','tu.user_id = tem.enq_user_id','left');
+      $this->db->join('tbl_sub_category tsc','tsc.sub_category_id = tem.enq_pro_subcat_id','left');
+      $this->db->where('tem.enq_status','Completed');
+      return $query=$this->db->get()->result();
+  }
+
+  public function get_update_enq($enq_id)       //11 Dec 2018
+     {
+        $this->db->select('*');
+        $this->db->from('tbl_enq_master t1');
+        $this->db->join('tbl_sub_category t2','t2.sub_category_id = t1. enq_pro_subcat_id OR t2.sub_category_id = t1.enq_ser_subcat_id','left');
+        //$this->db->join('tbl_vbusiness_details t3','t3.bis_vendor_id ='.$vendor);
+        //$this->db->join('tbl_enq_vendor_response t4','t4.res_vend_id = t3.bis_vendor_id AND t4.res_enq_id= t1.enq_id');
+
+        $this->db->where('t1.enq_id',$enq_id);
+       // $this->db->where('t1.enq_status','Active');
+        return $this->db->get()->result();
+     }
+  public function getPoDetails($enq_id,$v_id)    //18 Dec 2018
+     {
+        $this->db->select('*');
+        $this->db->from('tbl_user_po t1');
+        $this->db->join('tbl_enq_master t2','t2.enq_id=t1.po_enq_id');
+        $this->db->join('tbl_sub_category t3','t3.sub_category_id = t2.enq_pro_subcat_id OR t3.sub_category_id = t2.enq_ser_subcat_id','left');
+       
+        $this->db->where('t1.po_enq_id',$enq_id);
+        $this->db->where('t1.po_vend_id',$v_id);
+        $this->db->order_by('t1.po_count','DESC');
+        return $this->db->get()->result();
+     }
+
+  public function getPoDetails($enq_id,$v_id)    //18 Dec 2018
+     {
+        $this->db->select('*');
+        $this->db->from('tbl_user_po t1');
+        $this->db->join('tbl_enq_master t2','t2.enq_id=t1.po_enq_id');
+        $this->db->join('tbl_sub_category t3','t3.sub_category_id = t2.enq_pro_subcat_id OR t3.sub_category_id = t2.enq_ser_subcat_id','left');
+       
+        $this->db->where('t1.po_enq_id',$enq_id);
+        $this->db->where('t1.po_vend_id',$v_id);
+        $this->db->order_by('t1.po_count','DESC');
+        return $this->db->get()->result();
+     }
+
+
+	   public function getaccepted_PoDetails($enq_id,$v_id)    //20 Dec 2018
+     {
+        $this->db->select('*');
+        $this->db->from('tbl_user_po t1');
+        $this->db->join('tbl_enq_master t2','t2.enq_id=t1.po_enq_id');
+        $this->db->join('tbl_sub_category t3','t3.sub_category_id = t2.enq_pro_subcat_id OR t3.sub_category_id = t2.enq_ser_subcat_id','left');
+       
+        $this->db->where('t1.po_enq_id',$enq_id);
+        $this->db->where('t1.po_vend_id',$v_id);
+        $this->db->where('t1.po_quot_status','Accepted');
+        $this->db->order_by('t1.po_count','DESC');
+        return $this->db->get()->result();
+     }
+
+     public function update_PO($po_id,$today)                  //20 Dec 2018
+     {
+        $this->db->set('po_quot_status','Accepted');
+        $this->db->set('po_updated',$today);
+        $this->db->where('po_id',$po_id);
+        return $res = $this->db->update('tbl_user_po');
+     }
+
+     public function update_vend($vend_id,$enq_id,$today)             //20 Dec 2018
+     {
+        $this->db->set('res_enq_status','Deal');
+        $this->db->set('res_enq_updated',$today);
+        $this->db->where('res_vend_id',$vend_id);
+        $this->db->where('res_enq_id',$enq_id);
+        return $res = $this->db->update('tbl_enq_vendor_response');
+     }
+
+      public function update_enq($enq_id,$today)               //20 Dec 2018
+     {
+        $this->db->set('enq_status','Deal');
+        $this->db->set('enq_udated',$today);
+        $this->db->where('enq_id',$enq_id);
+        return $res = $this->db->update('tbl_enq_master');
+     }
+
+
+      public function close_Dealenq($enq_id,$vend_id,$today)     //20 Dec 2018
+     {
+        $this->db->set('res_enq_status','Closed');
+        $this->db->set('res_enq_updated',$today);
+        $this->db->where_not_in('res_vend_id',$vend_id);
+        $this->db->where('res_enq_id',$enq_id);
+        return $res = $this->db->update('tbl_enq_vendor_response');
+     }
+
+     public function insert_bill($data)                     //20 Dec 2018
+     {
+       $this->db->insert('tbl_eway_bill',$data);
+     }
+
+     public function getBillDetails($enq_id,$v_id,$user_id)    //20 Dec 2018
+     {
+       /* $this->db->select('*');
+        $this->db->from('tbl_enq_master t1');
+        $this->db->join('tbl_sub_category t2','t2.sub_category_id = t1. enq_pro_subcat_id OR t2.sub_category_id = t1.enq_ser_subcat_id','left');
+        $this->db->join('tbl_vbusiness_details t3','t3.bis_vendor_id ='.$v_id);
+        $this->db->join('tbl_enq_vendor_response t4','t4.res_vend_id = t3.bis_vendor_id AND t4.res_enq_id= t1.enq_id');
+        $this->db->join('tbl_user t5','t5.user_id='.$user_id);
+       $this->db->join('tbl_eway_bill t6','t6.bill_enq_id= t1.enq_id AND t6.bill_user_id=t1.enq_user_id AND t6.bill_vendor_id='.$v_id);
+
+
+        $this->db->where('t1.enq_id',$enq_id);
+        
+        return $this->db->get()->result();*/
+
+
+        $this->db->select('*');
+        $this->db->from('tbl_eway_bill t1');
+        $this->db->join('tbl_enq_master t2','t2.enq_id = t1.bill_enq_id');
+        $this->db->join('tbl_sub_category t3','t3.sub_category_id = t2. enq_pro_subcat_id OR t3.sub_category_id = t2.enq_ser_subcat_id','left');
+        $this->db->join('tbl_user t4','t4.user_id=t1.bill_user_id');
+        
+        $this->db->where('t1.bill_vendor_id',$v_id);
+        $this->db->where('t1.bill_enq_id',$enq_id);
+        $this->db->where('t1.bill_user_id',$user_id);
+        return $this->db->get()->result();
+     }
+}

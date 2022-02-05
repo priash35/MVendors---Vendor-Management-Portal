@@ -1,0 +1,103 @@
+<section class="main-container col2-right-layout">
+    <div class="main container">
+      <div class="row">
+        <div class="col-main col-sm-9 col-xs-12">
+          <div class="my-account">
+            <div class="page-title">
+              <h2>My Enquiries</h2>
+            </div>
+            <div class="wishlist-item table-responsive">
+              
+              <table class="col-md-12">
+                <thead>
+                  <tr>
+                   
+                    <th class="th-delate">Sr.No.</th>
+                    <th class="th-product">Vendor Name</th>
+                    <th class="th-product">Mobile No.</th>
+                    <th class="th-product">Email</th>
+                    <!--<th class="th-price">Response Date</th>
+                    <th class="th-product">Quantity</th>
+                    <th class="th-product">Unit</th>
+                    <th class="th-product">Credit Time</th>
+                    <th class="th-product">Order Req. Time</th> 
+                    <th class="th-product">Expectd Date</th> 
+                    <th class="th-details">Message</th>  
+                    <th class="th-details">Status</th> 
+                    <th class="th-product">Refer Id</th> -->
+                    <th class="th-price">Quotation</th> 
+                    <!-- <th class="th-total th-add-to-cart"></th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php $i=1; ?>
+                   <?php //print_r($vend_list); 
+                   foreach ($vend_list as $value) { ?>
+                  <tr>
+                    <td class="th-delate"><?php echo $i++; ?></td>
+
+                  <!--   <td class="th-product"><a href="#"><img src="images/products/img03.jpg" alt="cart"></a></td> -->
+                  
+                  
+                  
+                  <td class="th-delate"><?php echo $value->bis_name;?></td>
+                  
+                  
+                  <td class="th-delate"><?php echo $value->bis_mnumber;?></td>
+                 
+                  
+                  <td class="th-delate"><?php echo $value->bis_email;?></td>
+
+                  <?php                  
+                   $sql= 'SELECT * FROM tbl_vendor_quot WHERE quot_enq_id='.$value->res_enq_id.' AND quot_vend_id='.$value->res_vend_id;
+                      $query= $this->db->query($sql);
+                      $q_count= $query->num_rows();
+                      //echo $q_count;
+                  ?>
+                  <?php if($q_count>0){?>  
+                  <td class="th-delate"><a href="<?php echo base_url();?>User/view_quots/<?php echo $value->res_enq_id;?>"><button class="button cart-button">View(<?php echo $q_count;?>)</button></a></td>
+                  <?php } else{?>
+                    <td class="th-delate"><?php echo $q_count;?></td>
+                  <?php }?>
+                 
+                  <td class="th-details"><?php //echo $value->enq_status;?></td>
+                  <!-- <th class="td-add-to-cart"><a href="#">Contact</a></th> -->
+                  </tr>
+                   <?php }?>  
+                </tbody>
+              </table>
+            <!--   <a href="checkout.html" class="all-cart">Add all to cart</a>  --></div>
+           
+          </div>
+        </div>
+
+      
+
+
+        <aside class="right sidebar col-sm-3 col-xs-12">
+          <div class="sidebar-account block">
+            <div class="sidebar-bar-title">
+              <h3>My Account</h3>
+            </div>
+            <div class="block-content">
+              <ul>
+
+                <li  class="current"><a href="<?php echo base_url('User/user_Dashboard');?>">Enquiry Dashboard</a></li>
+                <li><a href="<?php echo base_url('User/user_profile');?>">User Information</a></li>
+                 <li><a href="<?php echo base_url('User/update_user_password');?>">Change Password</a></li>
+              <!--   <li><a href="#">Address Book</a></li>
+                <li><a href="#">My Orders</a></li>
+                <li><a href="#">Billing Agreements</a></li>
+                <li><a href="#">Recurring Profiles</a></li>
+                <li><a href="#">My Product Reviews</a></li>
+                <li><a href="#">My Tags</a></li>
+                <li class="current"><a href="#">My Wishlist</a></li>
+                <li><a href="#">My Downloadable</a></li>
+                <li class="last"><a href="#">Newsletter Subscriptions</a></li> -->
+              </ul>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>

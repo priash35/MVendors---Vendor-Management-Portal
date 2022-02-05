@@ -1,0 +1,41 @@
+[27-Dec-2018 18:30:34 Asia/Kolkata] PHP Fatal error:  Call to undefined method User_model::select_quot() in /home/gravitybusiness/public_html/mvendors/application/controllers/User.php on line 1098
+[27-Dec-2018 18:30:40 Asia/Kolkata] PHP Fatal error:  Call to undefined method User_model::select_quot() in /home/gravitybusiness/public_html/mvendors/application/controllers/User.php on line 1098
+[27-Dec-2018 18:30:58 Asia/Kolkata] PHP Fatal error:  Call to undefined method User_model::select_quot() in /home/gravitybusiness/public_html/mvendors/application/controllers/User.php on line 1098
+[28-Dec-2018 07:36:14 UTC] PHP Fatal error:  Call to a member function get_Configdata() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Configuration.php on line 25
+[28-Dec-2018 07:36:37 UTC] PHP Fatal error:  Call to a member function get_Configdata() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Configuration.php on line 25
+[28-Dec-2018 08:55:18 UTC] PHP Fatal error:  Call to a member function inactive_Enq() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 7
+[28-Dec-2018 08:55:19 UTC] PHP Fatal error:  Call to a member function inactive_Enq() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 7
+[28-Dec-2018 08:56:26 UTC] PHP Fatal error:  Call to a member function inactive_Enq() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 7
+[28-Dec-2018 08:56:27 UTC] PHP Fatal error:  Call to a member function inactive_Enq() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 7
+[28-Dec-2018 08:56:28 UTC] PHP Fatal error:  Call to a member function inactive_Enq() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 7
+[28-Dec-2018 08:56:28 UTC] PHP Fatal error:  Call to a member function inactive_Enq() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 7
+[28-Dec-2018 08:56:31 UTC] PHP Fatal error:  Call to a member function inactive_Enq() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 7
+[28-Dec-2018 08:56:33 UTC] PHP Fatal error:  Call to a member function inactive_Enq() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 7
+[28-Dec-2018 14:49:01 Asia/Kolkata] PHP Fatal error:  Call to undefined method Cron::send_email() in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 56
+[28-Dec-2018 14:50:01 Asia/Kolkata] PHP Fatal error:  Call to undefined method Cron::send_email() in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 56
+[28-Dec-2018 14:51:01 Asia/Kolkata] PHP Fatal error:  Call to undefined method Cron::send_email() in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 56
+[28-Dec-2018 14:52:01 Asia/Kolkata] PHP Fatal error:  Call to undefined method Cron::send_email() in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 56
+[28-Dec-2018 14:53:01 Asia/Kolkata] PHP Fatal error:  Call to undefined method Cron::send_email() in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 56
+[28-Dec-2018 14:54:01 Asia/Kolkata] PHP Fatal error:  Call to undefined method Cron::send_email() in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 56
+[28-Dec-2018 14:59:01 Asia/Kolkata] PHP Fatal error:  Call to undefined method Cron::send_email() in /home/gravitybusiness/public_html/mvendors/application/controllers/Cron.php on line 56
+[28-Dec-2018 09:37:07 UTC] PHP Parse error:  syntax error, unexpected ')' in /home/gravitybusiness/public_html/mvendors/application/controllers/Category.php on line 48
+[28-Dec-2018 10:36:26 UTC] PHP Parse error:  syntax error, unexpected '}' in /home/gravitybusiness/public_html/mvendors/application/controllers/Category.php on line 320
+[28-Dec-2018 10:53:33 UTC] PHP Parse error:  syntax error, unexpected '}' in /home/gravitybusiness/public_html/mvendors/application/views/admin/products/addcategory.php on line 16
+[28-Dec-2018 11:39:49 UTC] PHP Parse error:  syntax error, unexpected 'else' (T_ELSE) in /home/gravitybusiness/public_html/mvendors/application/controllers/Category.php on line 778
+[31-Dec-2018 07:51:41 UTC] PHP Parse error:  syntax error, unexpected '!=' (T_IS_NOT_EQUAL) in /home/gravitybusiness/public_html/mvendors/application/views/users/completed_enqlist.php on line 113
+[09-Jan-2019 13:15:07 UTC] PHP Fatal error:  Call to a member function get_Unote_Data() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/User.php on line 1222
+[09-Jan-2019 13:15:26 UTC] PHP Fatal error:  Call to a member function get_Unote_Data() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/User.php on line 1222
+[14-Jan-2019 11:37:17 UTC] PHP Fatal error:  Call to a member function record_list() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Madmin.php on line 481
+[24-Jan-2019 09:38:24 UTC] PHP Fatal error:  Call to undefined method Inquiry_model::get_Inquery_UnAccepted() in /home/gravitybusiness/public_html/mvendors/application/controllers/Inquiry.php on line 1786
+[24-Jan-2019 09:39:40 UTC] PHP Fatal error:  Cannot redeclare Inquiry_model::get_Inquery_Count() in /home/gravitybusiness/public_html/mvendors/application/models/Inquiry_model.php on line 674
+[24-Jan-2019 09:39:46 UTC] PHP Fatal error:  Cannot redeclare Inquiry_model::get_Inquery_Count() in /home/gravitybusiness/public_html/mvendors/application/models/Inquiry_model.php on line 674
+[24-Jan-2019 09:39:52 UTC] PHP Fatal error:  Cannot redeclare Inquiry_model::get_Inquery_Count() in /home/gravitybusiness/public_html/mvendors/application/models/Inquiry_model.php on line 674
+[24-Jan-2019 09:40:28 UTC] PHP Fatal error:  Call to undefined method Inquiry_model::get_Inquery_UnAccepted() in /home/gravitybusiness/public_html/mvendors/application/controllers/Inquiry.php on line 1786
+[24-Jan-2019 09:41:53 UTC] PHP Fatal error:  Cannot redeclare Inquiry_model::get_Inquery_Accepted() in /home/gravitybusiness/public_html/mvendors/application/models/Inquiry_model.php on line 683
+[24-Jan-2019 09:41:54 UTC] PHP Fatal error:  Cannot redeclare Inquiry_model::get_Inquery_Accepted() in /home/gravitybusiness/public_html/mvendors/application/models/Inquiry_model.php on line 683
+[28-Jan-2019 10:28:17 UTC] PHP Fatal error:  Call to a member function getSocialData() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Social.php on line 29
+[28-Jan-2019 10:28:49 UTC] PHP Fatal error:  Call to a member function getSocialData() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Social.php on line 29
+[28-Jan-2019 10:29:13 UTC] PHP Fatal error:  Call to a member function getSocialData() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Social.php on line 29
+[28-Jan-2019 10:52:26 UTC] PHP Fatal error:  Call to a member function record_list() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Social.php on line 78
+[28-Jan-2019 10:52:53 UTC] PHP Fatal error:  Call to a member function record_list() on null in /home/gravitybusiness/public_html/mvendors/application/controllers/Social.php on line 78
+[28-Jan-2019 11:34:54 UTC] PHP Parse error:  syntax error, unexpected '[', expecting identifier (T_STRING) or variable (T_VARIABLE) or '{' or '$' in /home/gravitybusiness/public_html/mvendors/application/views/users/master/footer.php on line 22

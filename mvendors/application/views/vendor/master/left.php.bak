@@ -1,0 +1,208 @@
+<body>
+<!-- Main navbar -->
+<div class="navbar navbar-expand-md navbar-dark bg-indigo navbar-static">
+    <div class="navbar-brand">
+        <a href="index.html" class="d-inline-block">
+            <img src="<?php echo base_url();?>/assets/admin/global_assets/images/logo_light.png" alt="">
+        </a>
+    </div>
+
+    <div class="d-md-none">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-mobile">
+            <i class="icon-tree5"></i>
+        </button>
+        <button class="navbar-toggler sidebar-mobile-main-toggle" type="button">
+            <i class="icon-paragraph-justify3"></i>
+        </button>
+    </div>
+
+    <div class="collapse navbar-collapse" id="navbar-mobile">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a href="#" class="navbar-nav-link sidebar-control sidebar-main-toggle d-none d-md-block">
+                    <i class="icon-paragraph-justify3"></i>
+                </a>
+            </li>
+        </ul>
+
+        <span class="navbar-text ml-md-3">
+           <!--  <span class="badge badge-mark border-orange-300 mr-2"></span>
+            Morning!!!
+ -->
+        </span>
+
+        	<ul class="navbar-nav ml-xl-auto">
+			<li class="nav-item dropdown dropdown-user">
+                <?php foreach ($result as $row) { ?>
+                   
+				<a href="#" class="navbar-nav-link dropdown-toggle legitRipple" data-toggle="dropdown" aria-expanded="false">
+                     <?php if ($row->vprof_pic == '') { ?>
+                    <img src="<?php echo base_url();?>assets\uploads\vendor\vendor.png" class="rounded-circle" alt="">
+                     <?php } else {?>
+                         <img src="<?php echo base_url();?>assets\uploads\vendor\<?php echo $row->vprof_pic;?>" class="rounded-circle" alt="">
+                      <?php } ?>
+					
+					<span><?php echo $row->vfname?></span>
+				</a>
+
+                <?php } ?>
+				<div class="dropdown-menu dropdown-menu-right">
+					<a href="<?php echo base_url("Mvendor/venoders_profile");?>" class="dropdown-item"><i class="icon-user-plus"></i> My profile</a>
+					<!-- <a href="#" class="dropdown-item"><i class="icon-coins"></i> My balance</a>
+					<a href="#" class="dropdown-item">
+						<i class="icon-comment-discussion"></i>
+						Messages
+						<span class="badge badge-pill bg-blue ml-auto">58</span>
+					</a> -->
+					<div class="dropdown-divider"></div>
+					<!-- <a href="#" class="dropdown-item"><i class="icon-cog5"></i> Account settings</a> -->
+					<a href="<?php echo base_url();?>VLogin/logout" class="dropdown-item"><i class="icon-switch2"></i> Logout</a>
+				</div>
+			</li>
+		</ul>
+    </div>
+</div>
+
+<!-- /main navbar -->
+
+
+<!-- Page content -->
+<div class="page-content">
+
+    <!-- Main sidebar -->
+    <div class="sidebar sidebar-light sidebar-main sidebar-expand-md">
+
+        <!-- Sidebar mobile toggler -->
+        <div class="sidebar-mobile-toggler text-center">
+            <a href="#" class="sidebar-mobile-main-toggle">
+                <i class="icon-arrow-left8"></i>
+            </a>
+            <span class="font-weight-semibold">Navigation</span>
+            <a href="#" class="sidebar-mobile-expand">
+                <i class="icon-screen-full"></i>
+                <i class="icon-screen-normal"></i>
+            </a>
+        </div>
+        <!-- /sidebar mobile toggler -->
+
+        <!-- Sidebar content -->
+        <div class="sidebar-content">
+           
+            <!-- Main navigation -->
+            <div class="card card-sidebar-mobile">
+			<?php if($result[0]->vgender != ''){?>
+                <ul class="nav nav-sidebar" data-nav-type="accordion">
+                    <li class="nav-item">
+                        <a href="<?php echo base_url("Mvendor");?>" class="nav-link active">
+                            <i class="icon-home4"></i>
+                            <span>
+                                Dashboard
+                            </span>
+                        </a>
+                        
+                    </li>
+                    <li class="nav-item nav-item-submenu">
+                        <!-- <a href="<?php //echo base_url();?>Mvendor/vendor_business" class="nav-link"><i class="icon-copy"></i> <span>Business Details</span></a> -->
+                       <!--  <a href="<?php //echo base_url("Vendor/Business_Details");?>" class="nav-link"><i class="icon-copy"></i> <span>Business Details</span></a> -->
+                    </li>
+                    
+                     <li class="nav-item nav-item-submenu">
+                        <!-- <a href="<?php //echo base_url();?>Mvendor/vendor_business" class="nav-link"><i class="icon-copy"></i> <span>Business Details</span></a> -->
+                        <a href="<?php echo base_url("Inquiry/vendor_enquirylist");?>" class="nav-link"><i class="icon-versions"></i> <span>Enquiry Details</span></a>
+                    </li>
+                    <li class="nav-item nav-item-submenu">
+                        <a href="#" class="nav-link"><i class="icon-stats-bars"></i> <span>Business Details</span></a>
+                        <ul class="nav nav-group-sub" data-submenu-title="Animations">
+                            <li class="nav-item"><a href="<?php echo base_url("Mvendor/update_business_details");?>" class="nav-link"><i class="icon-transmission"></i>Update Business Details</a></li>
+                            <li class="nav-item"><a href="<?php echo base_url("Mvendor/update_business_category");?>" class="nav-link"><i class="icon-transmission"></i>Update Category Details</a></li>
+                        </ul>
+                    </li>
+                     <li class="nav-item nav-item-submenu">
+                        <!-- <a href="<?php //echo base_url();?>Mvendor/vendor_business" class="nav-link"><i class="icon-copy"></i> <span>Business Details</span></a> -->
+                        <a href="<?php echo base_url("Package");?>" class="nav-link"><i class="icon-insert-template"></i> <span>Pckage Details</span></a>
+                    </li>
+                    <!-- <li class="nav-item nav-item-submenu">
+                        <a href="#" class="nav-link"><i class="icon-copy"></i> <span>Enquiry Details</span></a>
+                    </li> -->
+                    <!-- <li class="nav-item nav-item-submenu">
+                        <a href="#" class="nav-link"><i class="icon-stats-bars"></i> <span>Reports</span></a>
+                        <ul class="nav nav-group-sub" data-submenu-title="Animations">
+                            <li class="nav-item"><a href="animations_css3.html" class="nav-link"><i class="icon-transmission"></i>Vendor Stock</a></li>
+                            <li class="nav-item"><a href="animations_css3.html" class="nav-link"><i class="icon-transmission"></i>Purchase Register</a></li>
+                            <li class="nav-item"><a href="animations_css3.html" class="nav-link"><i class="icon-transmission"></i>User References</a></li>
+                            <li class="nav-item"><a href="animations_css3.html" class="nav-link"><i class="icon-transmission"></i>Vendor References</a></li>
+                        </ul>
+                    </li> -->
+                   
+                   
+                </ul>
+			<?php  }?>
+            </div>
+            <!-- /main navigation -->
+
+        </div>
+        <!-- /sidebar content -->
+        
+    </div>
+    <!-- /main sidebar -->
+
+
+    <!-- Main content -->
+    <div class="content-wrapper">
+
+        <!-- Page header -->
+        <div class="page-header page-header-light">
+            <!--<div class="page-header-content header-elements-md-inline">
+                <div class="page-title d-flex">
+                    <h4><i class="icon-arrow-left52 mr-2"></i> <span class="font-weight-semibold">Home</span> - Dashboard</h4>
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                <div class="header-elements d-none">
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="btn btn-link btn-float font-size-sm font-weight-semibold text-default">
+                            <i class="icon-bars-alt text-pink-300"></i>
+                            <span>Statistics</span>
+                        </a>
+                        <a href="#" class="btn btn-link btn-float font-size-sm font-weight-semibold text-default">
+                            <i class="icon-calculator text-pink-300"></i>
+                            <span>Invoices</span>
+                        </a>
+                        <a href="#" class="btn btn-link btn-float font-size-sm font-weight-semibold text-default">
+                            <i class="icon-calendar5 text-pink-300"></i>
+                            <span>Schedule</span>
+                        </a>
+                    </div>
+                </div>
+            </div>-->
+
+            <div class="breadcrumb-line breadcrumb-line-light header-elements-md-inline">
+                <div class="d-flex">
+                    <div class="breadcrumb">
+                        <a href="index.html" class="breadcrumb-item"><i class="icon-home2 mr-2"></i> Home</a>
+                        <span class="breadcrumb-item active"><?php echo $title;?></span>
+                    </div>
+
+                    <a href="#" class="header-elements-toggle text-default d-md-none"><i class="icon-more"></i></a>
+                </div>
+
+                <div class="header-elements d-none">
+                    <div class="breadcrumb justify-content-center">
+                        <!--<a href="#" class="breadcrumb-elements-item">
+                            <i class="icon-comment-discussion mr-2"></i>
+                            Support
+                        </a>-->
+
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+      <script>
+       $("#navMenus").on('click','li',function(){
+            // remove classname 'active' from all li who already has classname 'active'
+            $("#navMenus li.active").removeClass("active"); 
+            // adding classname 'active' to current click li 
+            $(this).addClass("active"); 
+        });
+    </script> 

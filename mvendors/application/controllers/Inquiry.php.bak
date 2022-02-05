@@ -1,0 +1,728 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Inquiry extends CI_Controller {
+	function __construct() {
+        parent::__construct();
+		$this->load->model('Inquiry_model');
+		$this->load->model('Mvendor_model');
+		$this->load->model('Madmin_model');
+		$this->load->model('User_model');
+		$this->load->model('Package_model');
+		$this->load->model('Advertise_model');
+		$this->load->model('Category_model');
+		$this->load->model('Vendor_model');
+		$this->load->helper(array('form', 'url'));
+        $this->load->library('form_validation');
+        $vendor = $_SESSION['userid'];
+        if ($vendor =='') {
+        	redirect("Login");
+        }
+
+        
+	}
+	
+	public function index()
+	{
+		$vendor = $_SESSION['userid'];
+		$data['result'] = $this->Mvendor_model->get_vendor_details($vendor);
+		$data['ip']  = $_SERVER['REMOTE_ADDR'];
+		//$data1['business'] = $this->Mvendor_model->get_business_details('tbl_vbusiness_details', $vendor);
+		$data['package'] = $this->Package_model->get_Package();
+		//$data['ip']= $hostname;
+		$data['title']= 'Enquiry';
+		$this->load->view('vendor/master/header');
+		$this->load->view('vendor/master/left',$data);
+		$this->load->view('vendor/index');	
+		$this->load->view('vendor/master/footer');
+	}
+	public function user_enquiry()
+	{
+		$uid = $_SESSION['userid'];
+		$result = $this->Madmin_model->get_rights($uid);
+		$data['uinquiry'] = $this->Inquiry_model->get_AllUserInquiry(); 
+		$title['profile'] = $this->User_model->get_AdminProfile($uid); 
+		$title['right'] = $result->arights;
+		$title['title']='Dashboard';	
+		$title['title']='User Enquiry';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/enquiry/user_enquirylist',$data);	
+		$this->load->view('admin/master/footer');
+	}
+
+	public function update_user_enquiry() //Update User Inquiry 19_Dec_18
+	{
+		if(isset($_POST['update_inq']))
+		{	
+				$where= array(
+		        'enq_id'=>$this->input->post('enq_id')
+						);
+				$Fake= $this->input->post('enq_status');
+
+				if ($Fake == 'Fake') {
+					
+		        	$where=$this->input->post('enq_id');
+					$this->db->select('*');
+					$this->db->from('tbl_vendor_commission_deduction');
+					$this->db->where('com_ded_enqId',$where);
+					$result = $this->db->get()->result();
+					foreach ($result as $key) {
+						$points = $key->com_ded_pts;
+						$vid = $key->com_ded_vendorId;
+						$this->db->set('bis_vendor_pts','bis_vendor_pts+'.$points, FALSE);
+						$this->db->where('bis_vendor_id', $vid );
+						$this->db->update('tbl_vbusiness_details');
+					}
+					date_default_timezone_set('Asia/Kolkata');
+					$timestamp = date("d-m-Y H:i:s");
+					foreach ($result as $value) {
+						$points = 0;
+						//$id = $key->com_ded_vendorId;
+						$inqid = $key->com_ded_enqId;
+						$data = array('com_ded_pts' => $points, 'com_deu_date' => $timestamp);
+						$this->db->set($data);
+						//$this->db->set('com_ded_pts', $points);
+						$this->db->where_in('com_ded_enqId', $inqid );
+						$this->db->update('tbl_vendor_commission_deduction');
+						
+					}
+						
+				}else{
+				$data=array(
+        			'enq_status'=>$this->input->post('enq_status')
+        			);
+				$details=$this->Advertise_model->records_update('tbl_enq_master',$data,$where);	
+				}
+			$this->session->set_flashdata('Inquiry','Successfully Updated.');
+			redirect(base_url().'Inquiry/user_enquiry');		
+				
+		}
+
+		$where=array(         			
+				'enq_id'=>$this->uri->segment('3')
+	    		  );
+		$data['uinquiry']=$details=$this->Advertise_model->record_list('tbl_enq_master',$where);
+		$uid = $_SESSION['userid'];
+		$result = $this->Madmin_model->get_rights($uid);
+		//$data['uinquiry'] = $this->Inquiry_model->get_AllUserInquiry(); 
+		$title['profile'] = $this->User_model->get_AdminProfile($uid); 
+		$title['right'] = $result->arights;
+		$title['title']='Dashboard';	
+		$title['title']='User Enquiry';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/enquiry/update_user_enquiry',$data);	
+		$this->load->view('admin/master/footer');
+	}
+	public function update_verified_inquiry() // Update Varified Inquiry 19_Dec_18
+	{
+		if(isset($_POST['update_inq']))
+		{	
+
+			$status=$this->input->post('enq_status');
+
+			if ($status == 'Completed') {
+				$where2= array(
+		       				 'enq_id'=>$this->input->post('enq_id')
+						);
+				$data2=array(
+		    		'enq_status'=>$this->input->post('enq_status')
+	    		);
+	    		$details=$this->Advertise_model->records_update('tbl_enq_master',$data2,$where2);
+			}
+			else{
+
+			$where= array(
+	        'enq_id'=>$this->input->post('enq_id')
+					);
+			$where1= array(
+	       				 'enq_id'=>$this->input->post('enq_id')
+					);
+			$data1=array(
+	    		'enq_qty'=>$this->input->post('enq_qty'),
+	    		'enq_unit'=>$this->input->post('enq_unit'),
+	    		'enq_crdt_time'=>$this->input->post('enq_crdt_time'),
+	    		'enq_oder_req_time'=>$this->input->post('enq_oder_req_time'),
+	    		'enq_status'=>$this->input->post('enq_status')
+    		);
+    		
+			$enq_id=$this->input->post('enq_id');
+			$enqDetails= $this->Inquiry_model->get_update_enq($enq_id);
+			$oldqty= $enqDetails['0']->enq_qty;
+			$newqty =$this->input->post('enq_qty');
+			
+			if ($newqty >= $oldqty) {
+				
+				$details=$this->Advertise_model->records_update('tbl_enq_master',$data1,$where1);
+
+			}else
+			{
+				$details=$this->Advertise_model->records_update('tbl_enq_master',$data1,$where1);
+					$product_rate= $enqDetails['0']->sub_category_price;
+					$commision= $enqDetails['0']->sub_category_commission;
+
+	        		$qty=$this->input->post('enq_qty');
+	        		
+	        		$deduction= ($product_rate * $qty)*$commision;
+
+					$where= array(
+			        'enq_id'=>$this->input->post('enq_id')
+							);
+					$Fake= $this->input->post('enq_status');
+
+				//if ($Fake == 'Fake') {
+					
+		        	$where=$this->input->post('enq_id');
+					$this->db->select('*');
+					$this->db->from('tbl_vendor_commission_deduction');
+					$this->db->where('com_ded_enqId',$where);
+					$result = $this->db->get()->result();
+
+					date_default_timezone_set('Asia/Kolkata');
+					$timestamp = date("d-m-Y H:i:s");
+					foreach ($result as $key) {
+						$points = $key->com_ded_pts;
+						$vid = $key->com_ded_vendorId;
+						$new_pts = $points- $deduction;
+
+						$this->db->set('bis_vendor_pts','bis_vendor_pts+'.$new_pts, FALSE);
+						$this->db->where('bis_vendor_id', $vid );
+						$this->db->update('tbl_vbusiness_details');
+
+						$data = array('com_ded_pts' => $deduction, 'com_deu_date' => $timestamp);
+						$this->db->set($data);
+						//$this->db->set('com_ded_pts', $points);
+						$this->db->where_in('com_ded_enqId', $inqid );
+						$this->db->update('tbl_vendor_commission_deduction');
+
+					}
+			}
+					
+		}			
+			/*		foreach ($result as $value) {
+						$points = 0;
+						//$id = $key->com_ded_vendorId;
+						$inqid = $key->com_ded_enqId;
+						$data = array('com_ded_pts' => $points, 'com_deu_date' => $timestamp);
+						$this->db->set($data);
+						//$this->db->set('com_ded_pts', $points);
+						$this->db->where_in('com_ded_enqId', $inqid );
+						$this->db->update('tbl_vendor_commission_deduction');
+						
+					}
+						$where1= array(
+		       				 'enq_id'=>$this->input->post('enq_id')
+						);
+						$data1=array(
+		        		'enq_qty'=>$this->input->post('enq_qty'),
+		        		'enq_unit'=>$this->input->post('enq_unit'),
+		        		'enq_crdt_time'=>$this->input->post('enq_crdt_time'),
+		        		'enq_oder_req_time'=>$this->input->post('enq_oder_req_time'),
+		        		'enq_status'=>$this->input->post('enq_status')
+		     
+		        			);*/
+
+						
+					/*$details=$this->Advertise_model->records_update('tbl_enq_master',$data1,$where1);	
+						*/
+			/*	}else{
+				$data=array(
+        		'enq_qty'=>$this->input->post('enq_qty'),
+        		'enq_unit'=>$this->input->post('enq_unit'),
+        		'enq_crdt_time'=>$this->input->post('enq_crdt_time'),
+        		'enq_oder_req_time'=>$this->input->post('enq_oder_req_time'),
+        		'enq_status'=>$this->input->post('enq_status')
+     
+        			);
+			$details=$this->Advertise_model->records_update('tbl_enq_master',$data,$where);	
+				}*/
+			$this->session->set_flashdata('Inquiry','Successfully Updated.');
+			redirect(base_url().'Inquiry/verified_inquiry');		
+				
+		}
+		$where=array(         			
+				'enq_id'=>$this->uri->segment('3')
+	    		  );
+		$data['uinquiry']=$details=$this->Advertise_model->record_list('tbl_enq_master',$where);
+		$uid = $_SESSION['userid'];
+		$result = $this->Madmin_model->get_rights($uid);
+		//$data['uinquiry'] = $this->Inquiry_model->get_AllUserInquiry(); 
+		$title['profile'] = $this->User_model->get_AdminProfile($uid); 
+		$title['right'] = $result->arights;
+		$title['title']='Dashboard';	
+		$title['title']='User Enquiry';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/enquiry/update_verified_inquiry',$data);	
+		$this->load->view('admin/master/footer');
+	}
+	public function single_user_enquirylist()
+	{
+		$uid = $_SESSION['userid'];
+		$result = $this->Madmin_model->get_rights($uid);
+		$data['uinquiry'] = $this->Inquiry_model->get_single_user_enquirylist();
+		$title['profile'] = $this->User_model->get_AdminProfile($uid); 
+		$title['right'] = $result->arights;
+		$title['title']='Dashboard';	
+		$title['title']='User Enquiry';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/enquiry/single_user_enquirylist',$data);	
+		$this->load->view('admin/master/footer');
+	}
+	public function verified_inquiry()
+	{
+		$uid = $_SESSION['userid'];
+		$result = $this->Madmin_model->get_rights($uid);
+		$data['uinquiry'] = $this->Inquiry_model->get_Allverified_inquiry(); 
+		$title['profile'] = $this->User_model->get_AdminProfile($uid); 
+		$title['right'] = $result->arights;
+		$title['title']='Dashboard';	
+		$title['title']='User Enquiry';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/enquiry/verified_inquiry',$data);	
+		$this->load->view('admin/master/footer');
+	}
+
+	public function non_verified_inquiry()
+	{
+		$uid = $_SESSION['userid'];
+		$result = $this->Madmin_model->get_rights($uid);
+		$data['uinquiry'] = $this->Inquiry_model->get_Allnon_verified_inquiry(); 
+		$title['profile'] = $this->User_model->get_AdminProfile($uid); 
+		$title['right'] = $result->arights;
+		$title['title']='Dashboard';	
+		$title['title']='Fake Inquiry';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/enquiry/non_verified_inquiry',$data);	
+		$this->load->view('admin/master/footer');
+	}
+
+	public function completed_inquiry()
+	{
+		$uid = $_SESSION['userid'];
+		$result = $this->Madmin_model->get_rights($uid);
+		$data['uinquiry'] = $this->Inquiry_model->get_Allcompleted_inquiry(); 
+		$title['profile'] = $this->User_model->get_AdminProfile($uid); 
+		$title['right'] = $result->arights;
+		$title['title']='Dashboard';	
+		$title['title']='Fake Inquiry';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/enquiry/completed_inquiry',$data);	
+		$this->load->view('admin/master/footer');
+	}
+	public function purchaseorder()
+	{
+		$title['title']='Purchase Order';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/enquiry/admin_productlist');	
+		$this->load->view('admin/master/footer');
+	}
+	public function askme()
+	{
+		$title['title']='Ask Me';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/products/admin_productlist');	
+		$this->load->view('admin/master/footer');
+	}
+	public function contact()
+	{
+		$title['title']='Contact';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/products/admin_productlist');	
+		$this->load->view('admin/master/footer');
+	}
+	public function refer_enquiry()
+	{
+		$title['title']='Refer Enquiry';
+		$this->load->view('admin/master/header');
+		$this->load->view('admin/master/left',$title);
+		$this->load->view('admin/products/admin_productlist');	
+		$this->load->view('admin/master/footer');
+
+	}
+
+	public function getInquiry()   			//updated on 7,17 dec 2018
+	{
+			/*print_r($_POST);
+			print_r($_FILES);
+			die();*/
+			
+
+			$user_id = $this->input->post('user_id');
+         	//$uname = $this->input->post('uname');
+         	//$unumber = $this->input->post('unumber');
+         	//$uemail = $this->input->post('uemail');
+         	//$uadd = $this->input->post('uadd');
+          	//$org_name = $this->input->post('org_name');
+          	$ref_id = $this->input->post('ref_id');
+          	$msg = $this->input->post('msg');
+          //	$attach = $this->input->post('attach');
+          	$pro_ser = $this->input->post('pro_ser');
+          	$enq_type=$this->input->post('enq_type');
+          	$vendor= $this->input->post('vendor');
+          	$address = $this->input->post('add');
+          	$country = $this->input->post('country');
+          	$state = $this->input->post('state');
+          	$city = $this->input->post('city');
+          	$org_name = $this->input->post('org_name');
+
+          //FOR PRODUCT
+	         $pro_scat_id = $this->input->post('pro_scat_id');
+	         $qty = $this->input->post('qty');
+	         $unit = $this->input->post('unit');
+	         $cr_time = $this->input->post('cr_time');
+	         $o_time = $this->input->post('o_time');
+
+          //FOR SERVICE
+
+	         $ser_cat_id = $this->input->post('ser_cat_id');
+	         $ser_subcat_id = $this->input->post('ser_subcat_id');
+	         $exp_time = $this->input->post('exp_time');
+		
+			date_default_timezone_set('Asia/Kolkata');
+			$today = date('d-m-Y H:i:s', time());
+			//echo $today;
+			$sql= 'SELECT config_value FROM tbl_config WHERE config_name ="enquiry_validity"';
+	        $query= $this->db->query($sql);
+	        $val= $query->result();
+	          
+	        $validate = $val[0]->config_value;
+         
+			$date = strtotime("+ ".$validate." day.", time());
+			$end_date= date('d-m-Y H:i:s', $date);
+
+			$data = array(
+				'enq_user_id'=> $user_id,
+				'enq_uorg_name' => $org_name,
+				'enq_add' => $address,
+				'enq_country' => $country,
+				'enq_state' => $state,
+				'enq_city' => $city,
+				'enq_refer_id' => $ref_id,
+				'enq_type'=> $enq_type,
+				'enq_ser_cat_id'=> $ser_cat_id,
+				'enq_ser_subcat_id'=>$ser_subcat_id,
+				'enq_pro_subcat_id'=> $pro_scat_id,
+				'enq_pro_ser'=> $pro_ser,
+				'enq_msg'=> $msg,
+				'enq_qty'=> $qty,
+				'enq_unit'=> $unit,
+				'enq_crdt_time'=> $cr_time,
+				'enq_oder_req_time'=> $o_time,
+				'enq_exptd_date'=> $exp_time,
+				'enq_status'=> "Active",
+				'enq_created'=> $today,
+				'enq_endDate'=> $end_date
+			);
+		
+
+		$enqID = $this->Inquiry_model->get_Inquiry($data);
+
+		if($enq_type =='Multiple'){
+
+			if($pro_scat_id!=''){
+				$subid= $pro_scat_id;
+			}
+			else{
+				$subid= $ser_subcat_id;
+			}
+
+			$res = $this->Inquiry_model->get_all_vendors($subid);
+
+			/*print_r($res);
+			die();
+*/
+			foreach ($res as $key) {
+				$data1 =array(
+					'res_enq_id'=> $enqID,
+					'res_vend_id'=> $key->vend_id,
+					'res_enq_status'=> "Active",
+					'res_enq_created'=> $today,
+					'res_enq_updated'=> $today
+				);
+				//print_r($data1);
+
+				$result = $this->Inquiry_model->sendTo_vendors($data1);
+			}
+		}
+
+		if($enq_type =='Single'){
+				$data1 =array(
+					'res_enq_id'=> $enqID,
+					'res_vend_id'=> $vendor,
+					'res_enq_status'=> "Accepted",
+					'res_enq_created'=> $today,
+					'res_enq_updated'=> $today
+				);
+			$result = $this->Inquiry_model->sendTo_vendors($data1);
+		}
+
+		/*for file upload on 17 dec 2018*/
+
+		if(!empty($_FILES)){		//if file is uploaded 
+			$ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+			/*$_FILES['userFile']['name'] = $_POST['cust_id']."_".$_POST['group_id']."_seccheq_".$created_date."_".time().".".$ext;//$_FILES['file']['name'];*/
+			$_FILES['userFile']['name'] = $_FILES['file']['name'];
+		    $_FILES['userFile']['type'] = $_FILES['file']['type'];
+		    $_FILES['userFile']['tmp_name'] = $_FILES['file']['tmp_name'];
+		    $_FILES['userFile']['error'] = $_FILES['file']['error'];
+		    $_FILES['userFile']['size'] = $_FILES['file']['size'];
+		    //echo "files".$_FILES['userFile']['name'];
+		    
+		    $uploadPath = 'assets/uploads/user/enquiry/';
+		    $config['upload_path'] = $uploadPath;
+	        //$config['allowed_types'] = 'pdf|csv|jpg|png|';
+	        $config['allowed_types'] = '*';
+	        $this->load->library('upload', $config);
+	        $this->upload->initialize($config);
+	        if($this->upload->do_upload('userFile')){
+	        	
+	        	$fileData = $this->upload->data();
+
+	        	$file_url = base_url().$uploadPath.$fileData['file_name'];
+	        	//print_r($file_url);
+	        		
+						$data2=array(
+							'atch_enq_id' => $enqID,
+							'atch_user_id' => $user_id,
+							'atch_name' => $file_url,
+							'atch_created' => $today
+						);
+						//print_r($data2);
+					
+				$details=$this->Category_model->record_insert('tbl_enq_atchmnt',$data2);
+					//die();
+				}else{
+	        		echo "error".$this->upload->display_errors();
+	       		}
+       }
+      /* else
+       {
+       	 echo "file not found";
+       }*/	
+       
+
+		//echo $enqID;
+		/*print_r($result);
+		die();*/
+		if ($result=='') {
+		  
+		   echo "0";
+		   
+		} else {
+		   
+		    echo "1";
+		}
+	}
+
+	function vendor_enquirylist()			//updated 10 Dec 2018
+	{
+		$vendor = $_SESSION['userid'];
+		$data['ip']  = $_SERVER['REMOTE_ADDR'];
+		$data['result'] = $this->Mvendor_model->get_vendor_details($vendor);
+		$data['userenq'] = $this->Inquiry_model->get_user_enqlist($vendor);
+		$data['title']='User Enquiry List';
+		$this->load->view('vendor/master/header');
+		$this->load->view('vendor/master/left',$data);
+		$this->load->view('vendor/vendor_enquirylist',$data);	
+		$this->load->view('vendor/master/footer');
+	}
+
+	function vendor_accpted_enquirylist()			//updated 18 Dec 2018
+	{
+		$vendor = $_SESSION['userid'];
+		$data['ip']  = $_SERVER['REMOTE_ADDR'];
+		$data['result'] = $this->Mvendor_model->get_vendor_details($vendor);
+		$data['userenq'] = $this->Inquiry_model->get_user_accepted_enqlist($vendor);
+		$data['title']='User Enquiry List';
+		$this->load->view('vendor/master/header');
+		$this->load->view('vendor/master/left',$data);
+		$this->load->view('vendor/vendor_accepted_enqlist',$data);	
+		$this->load->view('vendor/master/footer');
+	}
+
+	function vendor_deal_enquirylist()			//updated 20 Dec 2018
+	{
+		$vendor = $_SESSION['userid'];
+		$data['ip']  = $_SERVER['REMOTE_ADDR'];
+		$data['result'] = $this->Mvendor_model->get_vendor_details($vendor);
+		$data['userenq'] = $this->Inquiry_model->get_user_deal_enqlist($vendor);
+		$data['title']='User Enquiry List';
+		$this->load->view('vendor/master/header');
+		$this->load->view('vendor/master/left',$data);
+		$this->load->view('vendor/vendor_deal_enqlist',$data);	
+		$this->load->view('vendor/master/footer');
+	}
+
+	function accept_enquiry()				//updated 11 Dec 2018
+	{
+		$enq_id= $_REQUEST['id'];
+		$vendor = $_SESSION['userid'];
+
+		date_default_timezone_set('Asia/Kolkata');
+		$today = date('d-m-Y H:i:s', time());
+
+		$enqDetails= $this->Inquiry_model->get_enq($enq_id,$vendor);
+		//print_r($enqDetails);
+
+		if($enqDetails['0']->enq_pro_ser =="PRODUCT"){
+			$product_rate= $enqDetails['0']->sub_category_price;
+			
+			$qty= $enqDetails['0']->enq_qty;
+			$commision= $enqDetails['0']->sub_category_commission;
+
+			$deduction= ($product_rate * $qty)*$commision;
+
+			$v_points= $enqDetails['0']->bis_vendor_pts;
+
+			/*echo $v_points;
+			die();*/
+			$resId = $enqDetails['0']->res_id;
+
+			if($deduction <= $v_points)
+			{
+				/*echo "scucess";
+				die();*/
+				$new_pts= $v_points-$deduction;
+				$res= $this->Inquiry_model->update_vendor_points($vendor,$new_pts);
+				//echo $res;
+				if($res){
+
+					$data=array(
+						'com_ded_vendorId' => $vendor,
+						'com_ded_enqId' => $enq_id,
+						'com_ded_pts' => $deduction,
+						'com_ded_date' => $today
+					);
+
+					$this->Inquiry_model->insert_trans($data);
+
+					$res1=$this->Inquiry_model->update_enq_status($resId,$today);
+					echo $res1;
+				}
+			}
+
+			else
+			{
+				$this->session->set_flashdata('event_error','You dont have sufficient points to accept this enquiry.');
+			}
+		}
+		//print_r($res);
+		//$deduction= ($product_rate * $qty)/0.01;
+		//echo $enq_id;
+		$this->session->set_flashdata('event_success','Enquiry accepted Sucessfully.');
+		redirect('Inquiry/vendor_enquirylist');
+		
+	}
+
+	public function get_details()
+	{
+		$enq_id= $this->input->post('enq_Id');
+		$v_id= $this->input->post('vid');
+		$user_id= $this->input->post('user_Id');
+
+		//echo $enq_id;
+		$data=$this->Inquiry_model->getEnqDetails($enq_id,$v_id,$user_id);
+		echo json_encode($data);
+	}
+	
+	public function get_quot_details()					//18 Dec 2018
+	{
+		$enq_id= $this->input->post('enq_Id');
+		$vendor = $_SESSION['userid'];
+		//echo $enq_id;
+		$data=$this->Inquiry_model->getQuotDetails($enq_id,$vendor);
+		echo json_encode($data);
+	}
+	public function upload_quot()
+	{
+		$this->load->library('upload');
+		if(isset($_POST['quot_upload'])){
+			if($_FILES['quot']['tmp_name']!="")
+						{
+							$file_nm = $_FILES['quot']['name'];
+							$file_name = str_replace(' ','-',$file_nm);
+										 
+							$f_tmp =$_FILES['quot']['tmp_name'];
+							$file_tmp = str_replace(' ','-',$f_tmp);
+
+							$dest1= "./assets/uploads/vbusiness/quots/".$file_name;
+							$quot="assets/uploads/vbusiness/quots/".$file_name;
+							
+							$quot_url=base_url().$quot;
+
+							$slug = str_replace(' ','-',$str);
+							
+							move_uploaded_file($file_tmp, $dest1);
+					
+						}
+				$enq_id = $_POST['enqId'];
+				$userid = $_POST['userId'];
+				$vendor= $_SESSION['userid'];
+				
+				date_default_timezone_set('Asia/Kolkata');
+				$today = date('d-m-Y H:i:s', time());
+
+				$quot_count= $this->Inquiry_model->get_quotCount($enq_id,$vendor);
+
+				$sql= "SELECT config_value FROM tbl_config WHERE config_name ='quotation_num'";
+		        $query= $this->db->query($sql);
+		        $value= $query->result();
+
+		       	$tot_quot = $value['0']->config_value;
+		       // die();
+
+				/*echo $quot_count;
+				die();*/
+				if($quot_count<$tot_quot){
+					if($quot_count==0)
+					{
+						$cnt = 1;
+					}
+					else
+					{
+						$cnt = $quot_count+1;
+					}
+				
+
+					$data= array(
+						'quot_vend_id' => $vendor,
+						'quot_enq_id' => $enq_id,
+						'quot_user_id' => $userid,
+						'quot_name' => $quot_url,
+						'quot_count' => $cnt,
+						'quot_created' => $today,
+						'quot_updated' => $today
+					);
+
+					$res= $this->Inquiry_model->insert_quot($data);
+				}
+			}
+			else{
+				$this->session->set_flashdata('event_error','Already sent 10 quotations, can not send more.');
+				redirect('Inquiry/vendor_enquirylist');
+			}
+			$this->session->set_flashdata('event_success','Quotation send Sucessfully.');
+			redirect('Inquiry/vendor_enquirylist');
+	}
+
+	public function decline_enquiry()				//13 dec 2018
+	{
+		$res_id= $_REQUEST['id'];
+		$res= $this->Inquiry_model->close_inq($res_id);
+		if($res){
+			$this->session->set_flashdata('event_success','This enquiry is closed for you.');
+			redirect('Inquiry/vendor_enquirylist');
+		}
+	}
+
+
+}

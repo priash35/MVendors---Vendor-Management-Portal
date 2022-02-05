@@ -1,0 +1,3 @@
+TXT - Host/Name
+@ / Blank	
+TXT Valuev =spf1 include:zoho.com ~all
